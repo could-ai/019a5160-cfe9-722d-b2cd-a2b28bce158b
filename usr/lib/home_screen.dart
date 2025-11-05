@@ -10,7 +10,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _controller = TextEditingController();
-  final List<Map<String, String>> _messages = [];
+  final List<Map<String, dynamic>> _messages = [];
   String _currentRole = 'General Assistant';
   final List<String> _roles = [
     'General Assistant',
@@ -78,6 +78,19 @@ class _HomeScreenState extends State<HomeScreen> {
               "sender": "ai",
               "text": _getAIResponseForRole(_currentRole, userMessage),
             });
+
+            if (_currentRole == 'Storyteller') {
+              // Simulate image generation for the story
+              Future.delayed(const Duration(milliseconds: 1000), () {
+                setState(() {
+                  _messages.add({
+                    "sender": "ai",
+                    "imageUrl":
+                        "https://picsum.photos/seed/${DateTime.now().millisecondsSinceEpoch}/400/300",
+                  });
+                });
+              });
+            }
           });
         });
         _controller.clear();
@@ -127,7 +140,8 @@ class _HomeScreenState extends State<HomeScreen> {
               itemBuilder: (context, index) {
                 final message = _messages[index];
                 return ChatBubble(
-                  message: message['text']!,
+                  message: message['text'],
+                  imageUrl: message['imageUrl'],
                   isMe: message['sender'] == 'user',
                 );
               },
